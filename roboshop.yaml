@@ -60,4 +60,4 @@
       type: A
       ttl: 1
     loop: "{{ instances }}"
-    when: action == destroy
+    when: action == "destroy"
