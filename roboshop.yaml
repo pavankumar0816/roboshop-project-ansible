@@ -28,7 +28,7 @@
     ansible.builtin.debug:
       msg: "{{ ec2_output }}"
   
-  - create route 53 records
+  - name: create route 53 records
     amazon.aws.route53:
       state: present
       zone: "{{ domain_name }}"
@@ -39,7 +39,7 @@
       wait: false  
     loop: "{{ ec2_output.results  }}"
 
-  - create route 53 records for frontend
+  - name: create route 53 records for frontend
     amazon.aws.route53:
       state: present
       zone: "{{ domain_name }}"
@@ -47,7 +47,7 @@
       type: A
       ttl: 1
       value: "{{ item.instances[0].public_ip_address }}"
-      wait: false  
+      wait: false   # wait until the changes have been replicated to all amazon route 53 dns servers. default(false) 
       overwrite: true
     loop: "{{ ec2_output.results  }}"
     when: item.item == "frontend"
