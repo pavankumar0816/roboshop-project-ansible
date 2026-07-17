@@ -10,7 +10,7 @@
     sg_id: sg-01305469d3d08d74a
     domain_name: pmpkdev.online
     env: dev
-    action: create
+    ACTION: create
     instances:
     - mongodb
     - catalogue
@@ -28,12 +28,12 @@
         Name: "{{ item }}-{{ env }}"
     loop: "{{ instances }}"
     register: ec2_output
-    when: action == "create"
+    when: ACTION == "create"
   
   - name: print ec2 output
     ansible.builtin.debug:
       msg: "{{ ec2_output }}"
-      when: action == "create"
+      when: ACTION == "create"
   
   - name: create route 53 records
     amazon.aws.route53:
@@ -45,7 +45,7 @@
       value: "{{ item.instances[0].private_ip_address }}"
       wait: false  
     loop: "{{ ec2_output.results  }}"
-    when: action == "create"
+    when: ACTION == "create"
 
   - name: create route 53 records for frontend
     amazon.aws.route53:
@@ -60,7 +60,7 @@
     loop: "{{ ec2_output.results  }}"
     when: 
     - item.item == "frontend"
-    - action == "create"
+    - ACTION == "create"
 
   - name: delete route53 records 
     amazon.aws.route53:
@@ -70,7 +70,7 @@
       type: A
       ttl: 1
     loop: "{{ instances }}"
-    when: action == "destroy"
+    when: ACTION == "destroy"
 
   - name: delete ec2 instances
     amazon.aws.ec2_instance:
@@ -78,4 +78,4 @@
       name: "{{ item }}-{{ env }}"
       wait: false
     loop: "{{ instances }}"
-    when: action == "destroy"
+    when: ACTION == "destroy"
