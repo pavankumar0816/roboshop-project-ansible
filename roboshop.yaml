@@ -10,6 +10,7 @@
     sg_id: sg-0ccb89d519af9a73c
     domain_name: pmpkdev.online
     env: dev
+    action: create
     instances:
     - mongodb
     - catalogue
@@ -27,10 +28,12 @@
         Name: "{{ item }}-{{ env }}"
     loop: "{{ instances }}"
     register: ec2_output
+    when: action == "create"
   
   - name: print ec2 output
     ansible.builtin.debug:
       msg: "{{ ec2_output }}"
+      when: action == "create"
   
   - name: create route 53 records
     amazon.aws.route53:
@@ -42,6 +45,7 @@
       value: "{{ item.instances[0].private_ip_address }}"
       wait: false  
     loop: "{{ ec2_output.results  }}"
+    when: action == "create"
 
   - name: create route 53 records for frontend
     amazon.aws.route53:
@@ -54,7 +58,9 @@
       wait: false   # wait until the changes have been replicated to all amazon route 53 dns servers. default(false) 
       overwrite: true
     loop: "{{ ec2_output.results  }}"
-    when: item.item == "frontend"
+    when: 
+    - item.item == "frontend"
+    - action == "create"
 
   - name: delete route53 records 
     amazon.aws.route53:
