@@ -7,7 +7,7 @@
   connection: local
   vars:
     ami_id: ami-0220d79f3f480ecf5
-    sg_id: sg-0ccb89d519af9a73c
+    sg_id: sg-01305469d3d08d74a
     domain_name: pmpkdev.online
     env: dev
     action: create
