@@ -3,7 +3,7 @@
 
 
 - name: create ec2 instance and r53 records
-  hosts: localhost
+  hosts: all
   # connection: local
   vars:
     ami_id: ami-0220d79f3f480ecf5
